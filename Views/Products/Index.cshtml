@@ -1,0 +1,251 @@
+﻿@using IMS.Models.DTO
+@model IMS.Models.Product
+
+@{
+    ViewData["Title"] = "Product";
+
+
+
+    IEnumerable<Product>? products = ViewData["Product"] as IEnumerable<Product>;
+    IEnumerable<DTOBranch>? branchs = ViewData["Branch"] as IEnumerable<DTOBranch>;
+}
+
+
+
+<div class="page-header">
+    <h1>Product</h1>
+</div>
+<div class="row">
+
+
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex align-items-center">
+                    <h4 class="card-title">Product List</h4>
+                    <button class="btn btn-primary btn-round ml-auto" data-toggle="modal" data-target="#AddProductModal">
+                        <i class="fa fa-plus"></i>
+                       Product
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+
+                <div class="table-responsive">
+                    <table id="producttable" class="display table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Product Name</th>
+                                <th>Product Code</th>
+                                <th>Current Quantity</th>
+                                <th style="width: 10%">Action</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th>Name</th>
+                                <th>Product Name</th>
+                                <th>Product Code</th>
+                                <th>Current Quantity</th>
+                                <th>Action</th>
+                            </tr>
+                        </tfoot>
+                        <tbody>
+                            @if (products != null)
+                            {
+                                foreach (Product item in products)
+                                {
+                                    <tr>
+                                        <td>
+                                            @{
+                                                if (item.ProductImageUrl != null)
+                                                {
+                                                    byte[] byteImage = item.ProductImageUrl;
+                                                    string imgBase64 = Convert.ToBase64String(byteImage);
+                                                    string imgDataURL = string.Format("data:image/png;base64,{0}", imgBase64);
+
+                                                    <div class="item-list">
+                                                        <div class="avatar">
+                                                            <img src="@imgDataURL" Class="card-img-top" alt="..." class="avatar-img rounded-circle">
+                                                        </div>
+                                                    </div>
+
+                                                }
+                                                else
+                                                {
+                                                    <div class="item-list">
+                                                        <div class="avatar">
+                                                            <img src="Image/Product.png" Class="card-img-top" alt="..." class="avatar-img rounded-circle">
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+
+                                        </td>
+
+
+                                        <td> @item.ProductName</td>
+                                        <td>@item.ProductCode</td>
+                                        <td>@item.CurrentQuantity</td>
+                                        <td>
+                                            <div class="form-button-action">
+
+                                                <a asp-action="Edit" asp-route-id="@item.ProductId" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task"> <i class="fa fa-edit"></i></a> |
+                                                <a asp-action="Details" asp-route-id="@item.ProductId" data-toggle="tooltip" class="btn btn-link btn-primary btn-lg"><i class="fas fa-bars"></i></a> |
+                                                <a asp-action="Delete" asp-route-id="@item.ProductId" data-toggle="tooltip" class="btn btn-link btn-danger" data-original-title="Remove"><i class="fa fa-times"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="modal fade" id="AddProductModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header no-bd">
+                <h5 class="modal-title">
+                    <span class="fw-mediumbold">
+                        Product Form
+                    </span>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="small">Create a new Product, make sure you fill them properly</p>
+
+                <div class="card">
+                    <div class="card-body">
+
+                        <form asp-action="Create" method="post" enctype="multipart/form-data">
+                            @Html.AntiForgeryToken()
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="form-group">
+                                    <label asp-for="ProductName" class="control-label">Product Name</label>*
+                                    <input asp-for="ProductName" class="form-control" id="ProductName" placeholder="Enter Product Name" />
+                                <span asp-validation-for="ProductName" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="ProductCode" class="control-label">Product Code</label>
+                                <input asp-for="ProductCode" class="form-control" />
+                                <span asp-validation-for="ProductCode" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Barcode" class="control-label">Barcode</label>
+                                <input asp-for="Barcode" class="form-control" />
+                                <span asp-validation-for="Barcode" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="CurrentQuantity" class="control-label">Current Quantity</label>*
+                                <input asp-for="CurrentQuantity" class="form-control" />
+                                <span asp-validation-for="CurrentQuantity" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Description" class="control-label">Description</label>
+                                <input asp-for="Description" class="form-control" />
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="ProductImageUrl" class="control-label">Product Image</label>
+                                <input asp-for="ProductImageUrl" type="file" class="form-control" />
+                                <span asp-validation-for="ProductImageUrl" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Description ">Default Buying Price</label>
+                                <div class="input-group mb-3">
+
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">RM</span>
+                                    </div>
+                                    <input asp-for="DefaultBuyingPrice" type="number" class="form-control" step="0.01" />
+                                    <span asp-validation-for="DefaultBuyingPrice" class="text-danger"></span>
+
+                                </div>
+
+
+
+                                <label for="Description ">Default Selling Price</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">RM</span>
+                                    </div>
+                                    <input asp-for="DefaultSellingPrice" type="number" class="form-control" step="0.01" />
+                                    <span asp-validation-for="DefaultSellingPrice" class="text-danger"></span>
+
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="defaultSelect">Branch</label>
+                                <select asp-for="BranchId" class="form-control form-control" id="BranchId">
+                                    @foreach (DTOBranch item in branchs)
+                                    {
+                                        <option value="@item.BranchId">@item.BranchName</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="BranchId" class="text-danger"></span>
+                            </div>
+
+
+
+                            <div class="form-button-action">
+                                <input type="submit" value="Save" class="btn btn-primary" />
+                                <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Add">
+                                    <i class="fa fa-submit"></i>
+                                </button>
+                                <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Cancel">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </div>
+
+                        </form>
+                        
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    @{<script>
+                        $(document).ready(function() {
+
+                            // Add Row
+                              $('#producttable').DataTable({
+                                "pageLength": 5,
+                            });
+
+                            var action = '<td> <div class="form-button-action"> <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task"> <i class="fa fa-edit"></i> </button> <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove"> <i class="fa fa-times"></i> </button> </div> </td>';
+
+                        });
+        </script>
+    }
+
+    <script src="~/assets/js/plugin/datatables/datatables.min.js"></script>
+    }

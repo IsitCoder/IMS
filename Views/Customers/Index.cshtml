@@ -1,0 +1,201 @@
+﻿@model IMS.Models.Customer
+
+@{
+    ViewData["Title"] = "Customer";
+
+    IEnumerable<Customer>? customers = ViewData["Customer"] as IEnumerable<Customer>;
+
+}
+
+<div class="page-header">
+    <h1>Customer</h1>
+</div>
+<div class="row">
+
+
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex align-items-center">
+                    <h4 class="card-title">Customer List</h4>
+                    <button class="btn btn-primary btn-round ml-auto" data-toggle="modal" data-target="#AddCustomerModal">
+                        <i class="fa fa-plus"></i>
+                        Customer
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+
+                <div class="table-responsive">
+                    <table id="CustomerTable" class="display table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Customer Name</th>
+                                <th>City</th>
+                                <th>State</th>
+                                <th>Phone</th>
+                                <th style="width: 10%">Action</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th>Customer Name</th>
+                                <th>City</th>
+                                <th>State</th>
+                                <th>Phone</th>
+                                <th>Action</th>
+                            </tr>
+                        </tfoot>
+                        <tbody>
+                            @if (customers != null)
+                            {
+                                foreach (Customer item in customers)
+                                {
+                                    <tr>
+                                        <td>
+                                            @item.CustomerName
+                                        </td>
+
+
+                                        <td> @item.City</td>
+                                        <td>@item.State</td>
+                                        <td>@item.Phone</td>
+                                        <td>
+                                            <div class="form-button-action">
+
+                                                <a asp-action="Edit" asp-route-id="@item.CustomerId" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task"> <i class="fa fa-edit"></i></a> |
+                                                <a asp-action="Details" asp-route-id="@item.CustomerId" data-toggle="tooltip" class="btn btn-link btn-primary btn-lg"><i class="fas fa-bars"></i></a> |
+                                                <a asp-action="Delete" asp-route-id="@item.CustomerId" data-toggle="tooltip" class="btn btn-link btn-danger" data-original-title="Remove"><i class="fa fa-times"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="modal fade" id="AddCustomerModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header no-bd">
+                <h5 class="modal-title">
+                    <span class="fw-mediumbold">
+                        Customer Form
+                    </span>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="small">Create a new Customer, make sure you fill them properly</p>
+
+                <div class="card">
+                    <div class="card-body">
+
+                        <form asp-action="Create" method="post" enctype="multipart/form-data">
+                            @Html.AntiForgeryToken()
+
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="form-group">
+                                <label class="control-label">Customer Name</label>*
+                                <input asp-for="CustomerName" class="form-control" id="ProductName" placeholder="Enter Product Name" />
+                                <span asp-validation-for="CustomerName" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label  class="control-label">Phone</label>
+                                <input asp-for="Phone" class="form-control" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Email</label>
+                                <input asp-for="Email" type="email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Address</label>*
+                                <input asp-for="Address" class="form-control" />
+                                <span asp-validation-for="Address" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label">City</label>
+                                <input asp-for="City" class="form-control" />
+                                <span asp-validation-for="City" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label  class="control-label">State</label>
+                                <input asp-for="State" class="form-control" />
+                                <span asp-validation-for="State" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">City</label>
+                                <input asp-for="City" class="form-control" />
+                                <span asp-validation-for="City" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">ZipCode</label>
+                                <input asp-for="ZipCode" class="form-control" />
+                                <span asp-validation-for="ZipCode" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label">Contact Person</label>
+                                <input asp-for="ContactPerson" class="form-control" />
+                                <span asp-validation-for="ContactPerson" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-button-action">
+                                <input type="submit" value="Save" class="btn btn-primary" />
+                                <button type="submit" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Add">
+                                    <i class="fa fa-submit"></i>
+                                </button>
+                                <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Cancel">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    @{
+        <script>
+                  $(document).ready(function () {
+
+                      // Add Row
+                      $('#CustomerTable').DataTable({
+                          "pageLength": 5,
+                      });
+
+                      var action = '<td> <div class="form-button-action"> <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task"> <i class="fa fa-edit"></i> </button> <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove"> <i class="fa fa-times"></i> </button> </div> </td>';
+
+                  });
+        </script>
+    }
+
+    <script src="~/assets/js/plugin/datatables/datatables.min.js"></script>
+    }
