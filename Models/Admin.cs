@@ -1,16 +1,12 @@
-﻿namespace IMS.Models
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
+
+namespace IMS.Models
 {
-    public class Admin
+    public class Admin:IdentityUser
     {
-        public int AdminId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string ConfirmPassword { get; set; }
-        public string OldPassword { get; set; }
-        public string ProfilePicture { get; set; } = "/upload/blank-person.png";
-
-        public string ApplicationUserId { get; set; }
+        public byte[] ?ProfilePicture { get; set; }
     }
 }

@@ -9,6 +9,8 @@ namespace IMS.Models
         public string WarehouseName { get; set; }
         public string? Description { get; set; }
         [Display(Name = "Branch")]
+
+        [Required]
         public int BranchId { get; set; }
     }
 }

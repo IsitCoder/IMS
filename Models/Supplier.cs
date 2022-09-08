@@ -19,5 +19,7 @@ namespace IMS.Models
         public string Email { get; set; }
         [Display(Name = "Contact Person")]
         public string ?ContactPerson { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }

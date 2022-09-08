@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IMS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220829201929_a")]
-    partial class a
+    [Migration("20220906124926_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,6 +24,109 @@ namespace IMS.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("IMS.Models.Admin", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<byte[]>("ProfilePicture")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("IMS.Models.Bill", b =>
+                {
+                    b.Property<string>("BillId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AdminId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AdminId1")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BillCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.HasKey("BillId");
+
+                    b.HasIndex("AdminId1");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("Bill");
+                });
+
             modelBuilder.Entity("IMS.Models.Branch", b =>
                 {
                     b.Property<int>("BranchId")
@@ -33,7 +136,6 @@ namespace IMS.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BranchId"), 1L, 1);
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BranchName")
@@ -41,31 +143,28 @@ namespace IMS.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("City")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ContactPerson")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("State")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ZipCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("BranchId");
@@ -100,6 +199,9 @@ namespace IMS.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
 
@@ -133,7 +235,8 @@ namespace IMS.Migrations
 
                     b.HasKey("InvoiceId");
 
-                    b.HasIndex("SalesOrderId");
+                    b.HasIndex("SalesOrderId")
+                        .IsUnique();
 
                     b.ToTable("Invoice");
                 });
@@ -164,7 +267,14 @@ namespace IMS.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("LowStockLevel")
+                        .HasColumnType("int");
+
                     b.Property<string>("ProductCode")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<byte[]>("ProductImageUrl")
@@ -173,9 +283,6 @@ namespace IMS.Migrations
                     b.Property<string>("ProductName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("RestockLevel")
-                        .HasColumnType("int");
 
                     b.HasKey("ProductId");
 
@@ -191,6 +298,18 @@ namespace IMS.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PurchaseOrderId"), 1L, 1);
+
+                    b.Property<int>("AdminId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AdminId1")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<string>("BillId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("BranchId")
                         .HasColumnType("int");
@@ -216,10 +335,11 @@ namespace IMS.Migrations
                     b.Property<int>("SupplierId")
                         .HasColumnType("int");
 
-                    b.Property<double>("Total")
-                        .HasColumnType("float");
-
                     b.HasKey("PurchaseOrderId");
+
+                    b.HasIndex("AdminId1");
+
+                    b.HasIndex("BillId");
 
                     b.HasIndex("BranchId");
 
@@ -238,6 +358,15 @@ namespace IMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SalesOrderId"), 1L, 1);
 
+                    b.Property<int>("AdminId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AdminId1")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
                     b.Property<int>("BranchId")
                         .HasColumnType("int");
 
@@ -246,6 +375,9 @@ namespace IMS.Migrations
 
                     b.Property<DateTimeOffset>("DeliveryDate")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("InvoiceId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("OrderDate")
                         .HasColumnType("datetimeoffset");
@@ -262,10 +394,9 @@ namespace IMS.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Total")
-                        .HasColumnType("float");
-
                     b.HasKey("SalesOrderId");
+
+                    b.HasIndex("AdminId1");
 
                     b.HasIndex("BranchId");
 
@@ -274,38 +405,6 @@ namespace IMS.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("SalesOrder");
-                });
-
-            modelBuilder.Entity("IMS.Models.Shipment", b =>
-                {
-                    b.Property<int>("ShipmentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShipmentId"), 1L, 1);
-
-                    b.Property<bool>("IsFullShipment")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("SalesOrderId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTimeOffset>("ShipmentDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("ShipmentName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ShipmentTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WarehouseId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ShipmentId");
-
-                    b.ToTable("Shipment");
                 });
 
             modelBuilder.Entity("IMS.Models.Supplier", b =>
@@ -331,6 +430,9 @@ namespace IMS.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -350,29 +452,6 @@ namespace IMS.Migrations
                     b.HasKey("SupplierId");
 
                     b.ToTable("Supplier");
-                });
-
-            modelBuilder.Entity("IMS.Models.Warehouse", b =>
-                {
-                    b.Property<int>("WarehouseId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WarehouseId"), 1L, 1);
-
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("WarehouseName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("WarehouseId");
-
-                    b.ToTable("Warehouse");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -425,71 +504,6 @@ namespace IMS.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -577,11 +591,28 @@ namespace IMS.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("IMS.Models.Bill", b =>
+                {
+                    b.HasOne("IMS.Models.Admin", "Admin")
+                        .WithMany()
+                        .HasForeignKey("AdminId1");
+
+                    b.HasOne("IMS.Models.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Admin");
+
+                    b.Navigation("Supplier");
+                });
+
             modelBuilder.Entity("IMS.Models.Invoice", b =>
                 {
                     b.HasOne("IMS.Models.SalesOrder", "SalesOrder")
-                        .WithMany()
-                        .HasForeignKey("SalesOrderId")
+                        .WithOne("Invoice")
+                        .HasForeignKey("IMS.Models.Invoice", "SalesOrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -601,6 +632,14 @@ namespace IMS.Migrations
 
             modelBuilder.Entity("IMS.Models.PurchaseOrder", b =>
                 {
+                    b.HasOne("IMS.Models.Admin", "Admin")
+                        .WithMany()
+                        .HasForeignKey("AdminId1");
+
+                    b.HasOne("IMS.Models.Bill", "Bill")
+                        .WithMany()
+                        .HasForeignKey("BillId");
+
                     b.HasOne("IMS.Models.Branch", "Branch")
                         .WithMany()
                         .HasForeignKey("BranchId")
@@ -619,6 +658,10 @@ namespace IMS.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Admin");
+
+                    b.Navigation("Bill");
+
                     b.Navigation("Branch");
 
                     b.Navigation("Product");
@@ -628,6 +671,10 @@ namespace IMS.Migrations
 
             modelBuilder.Entity("IMS.Models.SalesOrder", b =>
                 {
+                    b.HasOne("IMS.Models.Admin", "Admin")
+                        .WithMany()
+                        .HasForeignKey("AdminId1");
+
                     b.HasOne("IMS.Models.Branch", "Branch")
                         .WithMany()
                         .HasForeignKey("BranchId")
@@ -645,6 +692,8 @@ namespace IMS.Migrations
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
+
+                    b.Navigation("Admin");
 
                     b.Navigation("Branch");
 
@@ -664,7 +713,7 @@ namespace IMS.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("IMS.Models.Admin", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -673,7 +722,7 @@ namespace IMS.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("IMS.Models.Admin", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -688,7 +737,7 @@ namespace IMS.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("IMS.Models.Admin", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -697,7 +746,7 @@ namespace IMS.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("IMS.Models.Admin", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -709,6 +758,12 @@ namespace IMS.Migrations
                     b.Navigation("PurchaseOrder");
 
                     b.Navigation("SalesOrder");
+                });
+
+            modelBuilder.Entity("IMS.Models.SalesOrder", b =>
+                {
+                    b.Navigation("Invoice")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

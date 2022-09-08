@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace IMS.Migrations
 {
-    public partial class x : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -28,6 +28,9 @@ namespace IMS.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProfilePicture = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -55,14 +58,15 @@ namespace IMS.Migrations
                     BranchId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     BranchName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    State = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ZipCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    State = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ZipCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ContactPerson = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    ContactPerson = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -83,29 +87,12 @@ namespace IMS.Migrations
                     ZipCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ContactPerson = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    ContactPerson = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Customer", x => x.CustomerId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Shipment",
-                columns: table => new
-                {
-                    ShipmentId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ShipmentName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SalesOrderId = table.Column<int>(type: "int", nullable: false),
-                    ShipmentDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    ShipmentTypeId = table.Column<int>(type: "int", nullable: false),
-                    WarehouseId = table.Column<int>(type: "int", nullable: false),
-                    IsFullShipment = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Shipment", x => x.ShipmentId);
                 });
 
             migrationBuilder.CreateTable(
@@ -121,7 +108,8 @@ namespace IMS.Migrations
                     ZipCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ContactPerson = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    ContactPerson = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -241,14 +229,15 @@ namespace IMS.Migrations
                     ProductId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ProductCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProductCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Barcode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CurrentQuantity = table.Column<int>(type: "int", nullable: false),
-                    RestockLevel = table.Column<int>(type: "int", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ProductImageUrl = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
                     DefaultBuyingPrice = table.Column<double>(type: "float", nullable: true),
                     DefaultSellingPrice = table.Column<double>(type: "float", nullable: true),
+                    LowStockLevel = table.Column<int>(type: "int", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     BranchId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -263,58 +252,25 @@ namespace IMS.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Warehouse",
+                name: "Bill",
                 columns: table => new
                 {
-                    WarehouseId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    WarehouseName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BranchId = table.Column<int>(type: "int", nullable: false)
+                    BillId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    BillCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AdminId = table.Column<int>(type: "int", nullable: false),
+                    AdminId1 = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    SupplierId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Warehouse", x => x.WarehouseId);
+                    table.PrimaryKey("PK_Bill", x => x.BillId);
                     table.ForeignKey(
-                        name: "FK_Warehouse_Branch_BranchId",
-                        column: x => x.BranchId,
-                        principalTable: "Branch",
-                        principalColumn: "BranchId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PurchaseOrder",
-                columns: table => new
-                {
-                    PurchaseOrderId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SupplierId = table.Column<int>(type: "int", nullable: false),
-                    BranchId = table.Column<int>(type: "int", nullable: false),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
-                    OrderDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    DeliveryDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    Price = table.Column<double>(type: "float", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    Total = table.Column<double>(type: "float", nullable: false),
-                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PurchaseOrder", x => x.PurchaseOrderId);
+                        name: "FK_Bill_AspNetUsers_AdminId1",
+                        column: x => x.AdminId1,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_PurchaseOrder_Branch_BranchId",
-                        column: x => x.BranchId,
-                        principalTable: "Branch",
-                        principalColumn: "BranchId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PurchaseOrder_Product_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "Product",
-                        principalColumn: "ProductId");
-                    table.ForeignKey(
-                        name: "FK_PurchaseOrder_Supplier_SupplierId",
+                        name: "FK_Bill_Supplier_SupplierId",
                         column: x => x.SupplierId,
                         principalTable: "Supplier",
                         principalColumn: "SupplierId",
@@ -327,19 +283,27 @@ namespace IMS.Migrations
                 {
                     SalesOrderId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
                     BranchId = table.Column<int>(type: "int", nullable: false),
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<double>(type: "float", nullable: false),
+                    Amount = table.Column<double>(type: "float", nullable: false),
                     OrderDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     DeliveryDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    Price = table.Column<double>(type: "float", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    Total = table.Column<double>(type: "float", nullable: false),
-                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InvoiceId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AdminId = table.Column<int>(type: "int", nullable: false),
+                    AdminId1 = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SalesOrder", x => x.SalesOrderId);
+                    table.ForeignKey(
+                        name: "FK_SalesOrder_AspNetUsers_AdminId1",
+                        column: x => x.AdminId1,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_SalesOrder_Branch_BranchId",
                         column: x => x.BranchId,
@@ -357,6 +321,57 @@ namespace IMS.Migrations
                         column: x => x.ProductId,
                         principalTable: "Product",
                         principalColumn: "ProductId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PurchaseOrder",
+                columns: table => new
+                {
+                    PurchaseOrderId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BranchId = table.Column<int>(type: "int", nullable: false),
+                    SupplierId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<double>(type: "float", nullable: false),
+                    Amount = table.Column<double>(type: "float", nullable: false),
+                    OrderDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    DeliveryDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BillId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    AdminId = table.Column<int>(type: "int", nullable: false),
+                    AdminId1 = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PurchaseOrder", x => x.PurchaseOrderId);
+                    table.ForeignKey(
+                        name: "FK_PurchaseOrder_AspNetUsers_AdminId1",
+                        column: x => x.AdminId1,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PurchaseOrder_Bill_BillId",
+                        column: x => x.BillId,
+                        principalTable: "Bill",
+                        principalColumn: "BillId");
+                    table.ForeignKey(
+                        name: "FK_PurchaseOrder_Branch_BranchId",
+                        column: x => x.BranchId,
+                        principalTable: "Branch",
+                        principalColumn: "BranchId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PurchaseOrder_Product_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Product",
+                        principalColumn: "ProductId");
+                    table.ForeignKey(
+                        name: "FK_PurchaseOrder_Supplier_SupplierId",
+                        column: x => x.SupplierId,
+                        principalTable: "Supplier",
+                        principalColumn: "SupplierId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -420,14 +435,35 @@ namespace IMS.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Bill_AdminId1",
+                table: "Bill",
+                column: "AdminId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bill_SupplierId",
+                table: "Bill",
+                column: "SupplierId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Invoice_SalesOrderId",
                 table: "Invoice",
-                column: "SalesOrderId");
+                column: "SalesOrderId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Product_BranchId",
                 table: "Product",
                 column: "BranchId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PurchaseOrder_AdminId1",
+                table: "PurchaseOrder",
+                column: "AdminId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PurchaseOrder_BillId",
+                table: "PurchaseOrder",
+                column: "BillId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PurchaseOrder_BranchId",
@@ -445,6 +481,11 @@ namespace IMS.Migrations
                 column: "SupplierId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SalesOrder_AdminId1",
+                table: "SalesOrder",
+                column: "AdminId1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SalesOrder_BranchId",
                 table: "SalesOrder",
                 column: "BranchId");
@@ -458,11 +499,6 @@ namespace IMS.Migrations
                 name: "IX_SalesOrder_ProductId",
                 table: "SalesOrder",
                 column: "ProductId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Warehouse_BranchId",
-                table: "Warehouse",
-                column: "BranchId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -489,28 +525,25 @@ namespace IMS.Migrations
                 name: "PurchaseOrder");
 
             migrationBuilder.DropTable(
-                name: "Shipment");
-
-            migrationBuilder.DropTable(
-                name: "Warehouse");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "SalesOrder");
 
             migrationBuilder.DropTable(
-                name: "Supplier");
+                name: "Bill");
 
             migrationBuilder.DropTable(
                 name: "Customer");
 
             migrationBuilder.DropTable(
                 name: "Product");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Supplier");
 
             migrationBuilder.DropTable(
                 name: "Branch");

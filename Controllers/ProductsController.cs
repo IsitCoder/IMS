@@ -75,7 +75,7 @@ namespace IMS.Controllers
 
             return View(product);
         }
-
+        [HttpGet]
         // GET: Products/Create
         public IActionResult Create()
         {
@@ -88,7 +88,7 @@ namespace IMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
 
-        public async Task<ActionResult> Create(string ProductName, string ?ProductCode,string ?Barcode,int CurrentQuantity, string Description, IFormFile? ProductImageUrl, double? DefaultBuyingPrice, double? DefaultSellingPrice,int BranchId)
+        public async Task<ActionResult> Create(string ProductName, string ProductCode,string ?Barcode,int CurrentQuantity, string Description, IFormFile? ProductImageUrl, double? DefaultBuyingPrice, double? DefaultSellingPrice,int BranchId)
         {
             if (ModelState.IsValid)
             {
