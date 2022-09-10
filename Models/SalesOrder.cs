@@ -10,15 +10,15 @@ namespace IMS.Models
 
         [Display(Name = "Branch")]
         public int BranchId { get; set; }
-        public Branch Branch { get; set; }
+        public Branch? Branch { get; set; }
 
         [Display(Name = "Customer")]
         public int CustomerId { get; set; }
-        public Customer Customer { get; set; }
+        public Customer? Customer { get; set; }
 
         [Display(Name = "Product")]
         public int ProductId { get; set; }
-        public Product Product { get; set; }
+        public Product? Product { get; set; }
 
         public int Quantity { get; set; }
         public double Price { get; set; }
@@ -29,9 +29,9 @@ namespace IMS.Models
         public string? Remarks { get; set; }
 
         public string? InvoiceId { get; set; }
-        public Invoice Invoice { get; set; }
-        public int AdminId { get; set; }
-        public Admin Admin { get; set; }
+        public Invoice? Invoice { get; set; }
+        public string? AdminId { get; set; }
+        public Admin? Admin { get; set; }
 
     }
 }

@@ -6,16 +6,14 @@ namespace IMS.Models
     public class Invoice
     {
         public int InvoiceId { get; set; }
-
-        public int SalesOrderId { get; set; }
-        public SalesOrder SalesOrder { get; set; }  
-
-        //[Display(Name = "Shipment")]
-        //public int ShipmentId { get; set; }
-        [Display(Name = "Invoice Date")]
-        public DateTimeOffset InvoiceDate { get; set; }
-        [Display(Name = "Invoice Due Date")]
-        public DateTimeOffset InvoiceDueDate { get; set; }
-  
+        [Required]
+        public string InvoiceCode { get; set; }
+        [Required]
+        [Display(Name = "Invoice Create Date")]
+        public DateTimeOffset InvoiceCreateDate { get; set; }
+        public string AdminId { get; set; }
+        public Admin? Admin { get; set; }
+        public int CustomerId { get; set; }
+        public Customer? Customer { get; set; }
     }
 }

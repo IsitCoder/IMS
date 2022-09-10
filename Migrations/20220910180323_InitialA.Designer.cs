@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IMS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220906124926_Initial")]
-    partial class Initial
+    [Migration("20220910180323_InitialA")]
+    partial class InitialA
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -102,25 +102,29 @@ namespace IMS.Migrations
 
             modelBuilder.Entity("IMS.Models.Bill", b =>
                 {
-                    b.Property<string>("BillId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AdminId")
+                    b.Property<int>("BillId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("AdminId1")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BillId"), 1L, 1);
+
+                    b.Property<string>("AdminId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("BillCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTimeOffset>("BillCreateDate")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<int>("SupplierId")
                         .HasColumnType("int");
 
                     b.HasKey("BillId");
 
-                    b.HasIndex("AdminId1");
+                    b.HasIndex("AdminId");
 
                     b.HasIndex("SupplierId");
 
@@ -224,19 +228,25 @@ namespace IMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InvoiceId"), 1L, 1);
 
-                    b.Property<DateTimeOffset>("InvoiceDate")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<string>("AdminId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTimeOffset>("InvoiceDueDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("SalesOrderId")
+                    b.Property<int>("CustomerId")
                         .HasColumnType("int");
+
+                    b.Property<string>("InvoiceCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("InvoiceCreateDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.HasKey("InvoiceId");
 
-                    b.HasIndex("SalesOrderId")
-                        .IsUnique();
+                    b.HasIndex("AdminId");
+
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("Invoice");
                 });
@@ -299,17 +309,14 @@ namespace IMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PurchaseOrderId"), 1L, 1);
 
-                    b.Property<int>("AdminId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("AdminId1")
+                    b.Property<string>("AdminId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<string>("BillId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int?>("BillId")
+                        .HasColumnType("int");
 
                     b.Property<int>("BranchId")
                         .HasColumnType("int");
@@ -337,7 +344,7 @@ namespace IMS.Migrations
 
                     b.HasKey("PurchaseOrderId");
 
-                    b.HasIndex("AdminId1");
+                    b.HasIndex("AdminId");
 
                     b.HasIndex("BillId");
 
@@ -358,10 +365,7 @@ namespace IMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SalesOrderId"), 1L, 1);
 
-                    b.Property<int>("AdminId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("AdminId1")
+                    b.Property<string>("AdminId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<double>("Amount")
@@ -378,6 +382,9 @@ namespace IMS.Migrations
 
                     b.Property<string>("InvoiceId")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("InvoiceId1")
+                        .HasColumnType("int");
 
                     b.Property<DateTimeOffset>("OrderDate")
                         .HasColumnType("datetimeoffset");
@@ -396,11 +403,13 @@ namespace IMS.Migrations
 
                     b.HasKey("SalesOrderId");
 
-                    b.HasIndex("AdminId1");
+                    b.HasIndex("AdminId");
 
                     b.HasIndex("BranchId");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("InvoiceId1");
 
                     b.HasIndex("ProductId");
 
@@ -595,7 +604,9 @@ namespace IMS.Migrations
                 {
                     b.HasOne("IMS.Models.Admin", "Admin")
                         .WithMany()
-                        .HasForeignKey("AdminId1");
+                        .HasForeignKey("AdminId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("IMS.Models.Supplier", "Supplier")
                         .WithMany()
@@ -610,13 +621,21 @@ namespace IMS.Migrations
 
             modelBuilder.Entity("IMS.Models.Invoice", b =>
                 {
-                    b.HasOne("IMS.Models.SalesOrder", "SalesOrder")
-                        .WithOne("Invoice")
-                        .HasForeignKey("IMS.Models.Invoice", "SalesOrderId")
+                    b.HasOne("IMS.Models.Admin", "Admin")
+                        .WithMany()
+                        .HasForeignKey("AdminId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("SalesOrder");
+                    b.HasOne("IMS.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Admin");
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("IMS.Models.Product", b =>
@@ -634,7 +653,7 @@ namespace IMS.Migrations
                 {
                     b.HasOne("IMS.Models.Admin", "Admin")
                         .WithMany()
-                        .HasForeignKey("AdminId1");
+                        .HasForeignKey("AdminId");
 
                     b.HasOne("IMS.Models.Bill", "Bill")
                         .WithMany()
@@ -673,7 +692,7 @@ namespace IMS.Migrations
                 {
                     b.HasOne("IMS.Models.Admin", "Admin")
                         .WithMany()
-                        .HasForeignKey("AdminId1");
+                        .HasForeignKey("AdminId");
 
                     b.HasOne("IMS.Models.Branch", "Branch")
                         .WithMany()
@@ -687,6 +706,10 @@ namespace IMS.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("IMS.Models.Invoice", "Invoice")
+                        .WithMany()
+                        .HasForeignKey("InvoiceId1");
+
                     b.HasOne("IMS.Models.Product", "Product")
                         .WithMany("SalesOrder")
                         .HasForeignKey("ProductId")
@@ -698,6 +721,8 @@ namespace IMS.Migrations
                     b.Navigation("Branch");
 
                     b.Navigation("Customer");
+
+                    b.Navigation("Invoice");
 
                     b.Navigation("Product");
                 });
@@ -758,12 +783,6 @@ namespace IMS.Migrations
                     b.Navigation("PurchaseOrder");
 
                     b.Navigation("SalesOrder");
-                });
-
-            modelBuilder.Entity("IMS.Models.SalesOrder", b =>
-                {
-                    b.Navigation("Invoice")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

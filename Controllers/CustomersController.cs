@@ -66,6 +66,7 @@ namespace IMS.Controllers
         {
             if (ModelState.IsValid)
             {
+                customer.IsActive = true;
                 _context.Add(customer);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -94,7 +95,7 @@ namespace IMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CustomerId,CustomerName,CustomerTypeId,Address,City,State,ZipCode,Phone,Email,ContactPerson")] Customer customer)
+        public async Task<IActionResult> Edit(int id, [Bind("CustomerId,CustomerName,CustomerTypeId,Address,City,State,ZipCode,Phone,Email,ContactPerson,IsActive")] Customer customer)
         {
             if (id != customer.CustomerId)
             {

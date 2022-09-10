@@ -157,6 +157,11 @@
                                 <span asp-validation-for="CurrentQuantity" class="text-danger"></span>
                             </div>
                             <div class="form-group">
+                                <label asp-for="LowStockLevel" class="control-label">Low Stock Level</label>*
+                                <input asp-for="LowStockLevel" class="form-control" />
+                                <span asp-validation-for="LowStockLevel" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
                                 <label asp-for="Description" class="control-label">Description</label>
                                 <input asp-for="Description" class="form-control" />
                                 <span asp-validation-for="Description" class="text-danger"></span>
@@ -203,7 +208,16 @@
                                 </select>
                                 <span asp-validation-for="BranchId" class="text-danger"></span>
                             </div>
+           
 
+          
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" name="IsActive" value="true" checked="checked" />
+                                    <span class="form-check-sign">Product Actice</span>
+                                    </label>
+                            </div>
+                      
 
 
                             <div class="form-button-action">

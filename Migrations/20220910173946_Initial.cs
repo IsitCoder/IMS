@@ -252,23 +252,53 @@ namespace IMS.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Invoice",
+                columns: table => new
+                {
+                    InvoiceId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    InvoiceCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    InvoiceCreateDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    AdminId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CustomerId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Invoice", x => x.InvoiceId);
+                    table.ForeignKey(
+                        name: "FK_Invoice_AspNetUsers_AdminId",
+                        column: x => x.AdminId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Invoice_Customer_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customer",
+                        principalColumn: "CustomerId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Bill",
                 columns: table => new
                 {
-                    BillId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    BillId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     BillCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AdminId = table.Column<int>(type: "int", nullable: false),
-                    AdminId1 = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    BillCreateDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    AdminId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     SupplierId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Bill", x => x.BillId);
                     table.ForeignKey(
-                        name: "FK_Bill_AspNetUsers_AdminId1",
-                        column: x => x.AdminId1,
+                        name: "FK_Bill_AspNetUsers_AdminId",
+                        column: x => x.AdminId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Bill_Supplier_SupplierId",
                         column: x => x.SupplierId,
@@ -293,15 +323,15 @@ namespace IMS.Migrations
                     DeliveryDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     InvoiceId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AdminId = table.Column<int>(type: "int", nullable: false),
-                    AdminId1 = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    InvoiceId1 = table.Column<int>(type: "int", nullable: true),
+                    AdminId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SalesOrder", x => x.SalesOrderId);
                     table.ForeignKey(
-                        name: "FK_SalesOrder_AspNetUsers_AdminId1",
-                        column: x => x.AdminId1,
+                        name: "FK_SalesOrder_AspNetUsers_AdminId",
+                        column: x => x.AdminId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -316,6 +346,11 @@ namespace IMS.Migrations
                         principalTable: "Customer",
                         principalColumn: "CustomerId",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SalesOrder_Invoice_InvoiceId1",
+                        column: x => x.InvoiceId1,
+                        principalTable: "Invoice",
+                        principalColumn: "InvoiceId");
                     table.ForeignKey(
                         name: "FK_SalesOrder_Product_ProductId",
                         column: x => x.ProductId,
@@ -338,21 +373,21 @@ namespace IMS.Migrations
                     OrderDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     DeliveryDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BillId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    AdminId = table.Column<int>(type: "int", nullable: false),
-                    AdminId1 = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    BillId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BillId1 = table.Column<int>(type: "int", nullable: true),
+                    AdminId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PurchaseOrder", x => x.PurchaseOrderId);
                     table.ForeignKey(
-                        name: "FK_PurchaseOrder_AspNetUsers_AdminId1",
-                        column: x => x.AdminId1,
+                        name: "FK_PurchaseOrder_AspNetUsers_AdminId",
+                        column: x => x.AdminId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_PurchaseOrder_Bill_BillId",
-                        column: x => x.BillId,
+                        name: "FK_PurchaseOrder_Bill_BillId1",
+                        column: x => x.BillId1,
                         principalTable: "Bill",
                         principalColumn: "BillId");
                     table.ForeignKey(
@@ -371,27 +406,6 @@ namespace IMS.Migrations
                         column: x => x.SupplierId,
                         principalTable: "Supplier",
                         principalColumn: "SupplierId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Invoice",
-                columns: table => new
-                {
-                    InvoiceId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SalesOrderId = table.Column<int>(type: "int", nullable: false),
-                    InvoiceDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    InvoiceDueDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Invoice", x => x.InvoiceId);
-                    table.ForeignKey(
-                        name: "FK_Invoice_SalesOrder_SalesOrderId",
-                        column: x => x.SalesOrderId,
-                        principalTable: "SalesOrder",
-                        principalColumn: "SalesOrderId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -435,9 +449,9 @@ namespace IMS.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Bill_AdminId1",
+                name: "IX_Bill_AdminId",
                 table: "Bill",
-                column: "AdminId1");
+                column: "AdminId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Bill_SupplierId",
@@ -445,10 +459,14 @@ namespace IMS.Migrations
                 column: "SupplierId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Invoice_SalesOrderId",
+                name: "IX_Invoice_AdminId",
                 table: "Invoice",
-                column: "SalesOrderId",
-                unique: true);
+                column: "AdminId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invoice_CustomerId",
+                table: "Invoice",
+                column: "CustomerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Product_BranchId",
@@ -456,14 +474,14 @@ namespace IMS.Migrations
                 column: "BranchId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PurchaseOrder_AdminId1",
+                name: "IX_PurchaseOrder_AdminId",
                 table: "PurchaseOrder",
-                column: "AdminId1");
+                column: "AdminId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PurchaseOrder_BillId",
+                name: "IX_PurchaseOrder_BillId1",
                 table: "PurchaseOrder",
-                column: "BillId");
+                column: "BillId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PurchaseOrder_BranchId",
@@ -481,9 +499,9 @@ namespace IMS.Migrations
                 column: "SupplierId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SalesOrder_AdminId1",
+                name: "IX_SalesOrder_AdminId",
                 table: "SalesOrder",
-                column: "AdminId1");
+                column: "AdminId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SalesOrder_BranchId",
@@ -494,6 +512,11 @@ namespace IMS.Migrations
                 name: "IX_SalesOrder_CustomerId",
                 table: "SalesOrder",
                 column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SalesOrder_InvoiceId1",
+                table: "SalesOrder",
+                column: "InvoiceId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SalesOrder_ProductId",
@@ -519,31 +542,31 @@ namespace IMS.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Invoice");
-
-            migrationBuilder.DropTable(
                 name: "PurchaseOrder");
-
-            migrationBuilder.DropTable(
-                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "SalesOrder");
 
             migrationBuilder.DropTable(
+                name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
                 name: "Bill");
 
             migrationBuilder.DropTable(
-                name: "Customer");
+                name: "Invoice");
 
             migrationBuilder.DropTable(
                 name: "Product");
 
             migrationBuilder.DropTable(
+                name: "Supplier");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Supplier");
+                name: "Customer");
 
             migrationBuilder.DropTable(
                 name: "Branch");

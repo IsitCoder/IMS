@@ -9,13 +9,13 @@ namespace IMS.Models
 
         [Display(Name = "Branch")]
         public int BranchId { get; set; }
-        public Branch Branch { get; set; }
+        public Branch? Branch { get; set; }
 
         [Display(Name = "Supplier")]
         public int SupplierId { get; set; }
-        public Supplier Supplier { get; set; }
+        public Supplier? Supplier { get; set; }
         public int ProductId { get; set; }
-        public Product Product { get; set; }
+        public Product? Product { get; set; }
 
         public int Quantity { get; set; }
         public double Price { get; set; }
@@ -24,10 +24,10 @@ namespace IMS.Models
         public DateTimeOffset DeliveryDate { get; set; }
         public string? Remarks { get; set; }
 
-        public string? BillId { get; set; }
-        public Bill Bill { get; set; }
-        public int AdminId { get; set; }
-        public Admin Admin { get; set; }
+        public int? BillId { get; set; }
+        public Bill? Bill { get; set; }
+        public string? AdminId { get; set; }
+        public Admin? Admin { get; set; }
 
 
        

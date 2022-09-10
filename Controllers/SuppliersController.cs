@@ -62,10 +62,12 @@ namespace IMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("SupplierId,SupplierName,Address,City,State,ZipCode,Phone,Email,ContactPerson")] Supplier supplier)
+        public async Task<IActionResult> Create([Bind("SupplierId,SupplierName,Address,City,State,ZipCode,Phone,Email,ContactPerson,IsActive")] Supplier supplier)
         {
+            
             if (ModelState.IsValid)
             {
+                supplier.IsActive = true;
                 _context.Add(supplier);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

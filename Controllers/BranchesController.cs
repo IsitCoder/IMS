@@ -60,7 +60,7 @@ namespace IMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BranchId,BranchName,Description,Address,City,State,ZipCode,Phone,Email,ContactPerson")] Branch branch)
+        public async Task<IActionResult> Create([Bind("BranchId,BranchName,Description,Address,City,State,ZipCode,Phone,Email,ContactPerson,IsActive")] Branch branch)
         {
             if (ModelState.IsValid)
             {
@@ -92,7 +92,7 @@ namespace IMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("BranchId,BranchName,Description,Address,City,State,ZipCode,Phone,Email,ContactPerson")] Branch branch)
+        public async Task<IActionResult> Edit(int id, [Bind("BranchId,BranchName,Description,Address,City,State,ZipCode,Phone,Email,ContactPerson,IsActive")] Branch branch)
         {
             if (id != branch.BranchId)
             {

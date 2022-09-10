@@ -88,7 +88,7 @@ namespace IMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
 
-        public async Task<ActionResult> Create(string ProductName, string ProductCode,string ?Barcode,int CurrentQuantity, string Description, IFormFile? ProductImageUrl, double? DefaultBuyingPrice, double? DefaultSellingPrice,int BranchId)
+        public async Task<ActionResult> Create(string ProductName, string ProductCode,string ?Barcode,int CurrentQuantity,string Description, IFormFile? ProductImageUrl, double? DefaultBuyingPrice, double? DefaultSellingPrice, int? LowStockLevel, bool IsActive,int BranchId)
         {
             if (ModelState.IsValid)
             {
@@ -122,9 +122,10 @@ namespace IMS.Controllers
             p.CurrentQuantity = CurrentQuantity;
             p.DefaultBuyingPrice = DefaultBuyingPrice;
             p.DefaultSellingPrice = DefaultSellingPrice;
+            p.LowStockLevel = LowStockLevel;
+            p.IsActive = IsActive;
             p.BranchId = BranchId;
-
-
+         
                 _context.Add(p);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -153,23 +154,48 @@ namespace IMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,ProductCode,Barcode,CurrentQuantity,Description,ProductImageUrl,DefaultBuyingPrice,DefaultSellingPrice,BranchId")] Product product)
+        public async Task<IActionResult> Edit(int ProductId,string ProductName, string ProductCode, string? Barcode, int CurrentQuantity, string Description,IFormFile? ProductImageUrl, double? DefaultBuyingPrice, double? DefaultSellingPrice, int? LowStockLevel, bool IsActive, int BranchId)
         {
-            if (id != product.ProductId)
-            {
-                return NotFound();
-            }
-
+            Product p = _context.Product.FirstOrDefault(item => item.ProductId == ProductId);
             if (ModelState.IsValid)
             {
-                try
+                
+                if (ProductImageUrl != null)
                 {
-                    _context.Update(product);
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await ProductImageUrl.CopyToAsync(memoryStream);
+
+
+                        if (memoryStream.Length < 2097152)
+                        {
+                            p.ProductImageUrl = memoryStream.GetBuffer();
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("File", "The file is too large.");
+                        }
+                    }
+                }
+                p.ProductName = ProductName;
+                p.ProductCode = ProductCode;
+                p.Barcode = Barcode;
+                p.Description = Description;
+                p.CurrentQuantity = CurrentQuantity;
+                p.DefaultBuyingPrice = DefaultBuyingPrice;
+                p.DefaultSellingPrice = DefaultSellingPrice;
+                p.LowStockLevel = LowStockLevel;
+                p.IsActive = IsActive;
+                p.BranchId = BranchId;
+
+
+                try
+                { 
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductExists(product.ProductId))
+                    if (!ProductExists(p.ProductId))
                     {
                         return NotFound();
                     }
@@ -180,7 +206,7 @@ namespace IMS.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(product);
+            return View(p);
         }
 
         // GET: Products/Delete/5

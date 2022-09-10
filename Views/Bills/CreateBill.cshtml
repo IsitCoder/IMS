@@ -1,0 +1,119 @@
+﻿@model List<IMS.Models.PurchaseOrder>
+
+@{
+    ViewData["Title"] = "Create Bill";
+}
+
+<h1>CreateBill</h1>
+<form asp-action="GenerateBill">
+<p>
+    <input type="submit" value="Generate New Bill"/>
+</p>
+<p>
+        @if (ViewData["bill"] != null)
+        {
+            var viewbill = ViewData["bill"] as Bill;
+            <p>Date: @viewbill.BillCreateDate</p>
+            <p>Bill NO: @viewbill.BillCode</p>
+            <p>Supplier ID: @viewbill.SupplierId</p>
+            @Html.AntiForgeryToken()
+            <input hidden="hidden" name="BillCreateDate" type="datetime" value="@viewbill.BillCreateDate" />
+            <input hidden="hidden" name="BillCode" type="text" value="@viewbill.BillCode" />
+            <input hidden="hidden" name="SupplierId" type="number" value="@viewbill.SupplierId" />
+        }
+
+<table class="table">
+    <thead>
+        <tr>
+            
+            <th>
+                Check
+            </th>
+            <th>
+             Branch
+            </th>
+            <th>
+          Supplier
+            </th>
+            <th>
+            Product
+            </th>
+            <th>
+              Quantity
+            </th>
+            <th>
+            Price
+            </th>
+            <th>
+               Amount
+            </th>
+            <th>
+            OrderDate
+            </th>
+            <th>
+               DeliveryDate
+            </th>
+            <th>
+             Remarks
+            </th>
+            <th>
+                Bill
+            </th>
+            <th>
+                Admin
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    
+    <tbody>
+       
+@foreach (var item in Model) {
+        <tr>
+            <td>
+               <input type="checkbox" name="GenerateBill" value="@item.PurchaseOrderId"></input>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Branch.BranchId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Supplier.SupplierName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Product.ProductCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeliveryDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Remarks)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Bill.BillId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Admin.Id)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.PurchaseOrderId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.PurchaseOrderId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.PurchaseOrderId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+ 
+</table>
+</form>

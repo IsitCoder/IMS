@@ -10,6 +10,28 @@
     <h4>Product</h4>
     <hr />
     <dl class="row">
+        @{
+            if (Model.ProductImageUrl != null)
+            {
+                byte[] byteImage = Model.ProductImageUrl;
+                string imgBase64 = Convert.ToBase64String(byteImage);
+                string imgDataURL = string.Format("data:image/png;base64,{0}", imgBase64);
+
+                <dt class="col-sm-10">
+                        <img src="@imgDataURL" Class="card-img-top" alt="..." class="avatar-img rounded-circle">
+                </dt>
+
+            }
+            else
+            {
+                <dt class="col-sm-10">
+                    <img src="Image/Product.png" Class="card-img-top" alt="..." class="avatar-img rounded-circle">        
+                </dt>
+            }
+        }
+        <dd class="col-sm-10">
+            <br />
+        </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.ProductName)
         </dt>
@@ -41,12 +63,6 @@
             @Html.DisplayFor(model => model.Description)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ProductImageUrl)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProductImageUrl)
-        </dd>
-        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.DefaultBuyingPrice)
         </dt>
         <dd class = "col-sm-10">
@@ -64,6 +80,14 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.BranchId)
         </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.IsActive)
+        </dt>
+        <dd class="col-sm-10">
+            @(Model.IsActive ? "Active" : "Unactive")
+        </dd>
+
     </dl>
 </div>
 <div>

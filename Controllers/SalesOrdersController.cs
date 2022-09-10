@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using IMS.Data;
 using IMS.Models;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
+using System.Security.Claims;
 
 namespace IMS.Controllers
 {
@@ -56,6 +58,17 @@ namespace IMS.Controllers
             return View();
         }
 
+
+        //Check Product Stock
+        public bool CheckProductStock(int currentquantity,int orderquantity)
+        {
+            if (currentquantity < orderquantity)
+            {          
+                return false;
+            }
+            return true;
+        }
+
         // POST: SalesOrders/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -63,9 +76,27 @@ namespace IMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("SalesOrderId,CustomerId,BranchId,ProductId,OrderDate,DeliveryDate,Price,Quantity,Total,Remarks")] SalesOrder salesOrder)
         {
+            var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            salesOrder.AdminId = user;
             if (ModelState.IsValid)
             {
+                var ProductStock = await _context.Product.FindAsync(salesOrder.ProductId);
+                if(ProductStock == null)
+                    return NotFound();
+                if (!CheckProductStock(ProductStock.CurrentQuantity,salesOrder.Quantity))
+                {
+                    String s = String.Format("The stock for {0} this are not enough!!!" +
+                        "\nOrder {2} units have exceed {1} units in Inventory",
+                         ProductStock.ProductName, ProductStock.CurrentQuantity,salesOrder.Quantity);
+                    ViewData["Message"] = s;
+                    ViewData["BranchId"] = new SelectList(_context.Branch, "BranchId", "BranchName", salesOrder.BranchId);
+                    ViewData["CustomerId"] = new SelectList(_context.Customer, "CustomerId", "CustomerName", salesOrder.CustomerId);
+                    ViewData["ProductId"] = new SelectList(_context.Product, "ProductId", "ProductName", salesOrder.ProductId);
+                    return View(salesOrder);
+                }
+
                 _context.Add(salesOrder);
+                ProductStock.CurrentQuantity-=salesOrder.Quantity;
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -99,23 +130,89 @@ namespace IMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("SalesOrderId,CustomerId,BranchId,ProductId,OrderDate,DeliveryDate,Price,Quantity,Total,Remarks")] SalesOrder salesOrder)
+        public async Task<IActionResult> Edit(int SalesOrderId, int BranchId, int CustomerId, int ProductId, int Quantity, double Price, double Amount, DateTimeOffset OrderDate, DateTimeOffset DeliveryDate, string? Remarks, string? InvoiceId, string AdminId)
         {
-            if (id != salesOrder.SalesOrderId)
+            if (SalesOrderId==null)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
+                SalesOrder sales = _context.SalesOrder.FirstOrDefault(item => item.SalesOrderId == SalesOrderId);
+                if (sales == null)
+                    return NotFound();
+                if (sales.ProductId == ProductId)
+                {
+                    var UpdateProduct = await _context.Product.FindAsync(ProductId);
+                    if (UpdateProduct == null)
+                        return NotFound();
+                    if (sales.Quantity > Quantity)
+                    {
+
+                        var increaseQuantity = sales.Quantity - Quantity;
+                        UpdateProduct.CurrentQuantity += increaseQuantity;
+                    }
+                    if (sales.Quantity < Quantity)
+                    {
+                        if(!CheckProductStock(UpdateProduct.CurrentQuantity,Quantity))
+                        {
+                            String s = String.Format("The stock for {0} this are not enough!!!" +
+                        "\nOrder {2} units have exceed {1} units in Inventory",
+                         UpdateProduct.ProductName, UpdateProduct.CurrentQuantity,Quantity);
+                            ViewData["Message"] = s;
+                            SalesOrder so = new SalesOrder();
+                            so.SalesOrderId = SalesOrderId;
+                            so.BranchId = BranchId;
+                            so.CustomerId=CustomerId;
+                            so.ProductId = ProductId;
+                            so.Quantity = Quantity;
+                            so.Price=Price;
+                            so.Amount=Amount;
+                            so.OrderDate = OrderDate;
+                            so.DeliveryDate = DeliveryDate;
+                            so.Remarks = Remarks;
+                            so.InvoiceId=InvoiceId;
+                            so.AdminId = AdminId; 
+                            ViewData["BranchId"] = new SelectList(_context.Branch, "BranchId", "BranchName", so.BranchId);
+                            ViewData["CustomerId"] = new SelectList(_context.Customer, "CustomerId", "CustomerName", so.CustomerId);
+                            ViewData["ProductId"] = new SelectList(_context.Product, "ProductId", "ProductName", so.ProductId);
+                            return View(so);
+                        }
+                        var decreaseQuantity = Quantity - sales.Quantity;
+                        UpdateProduct.CurrentQuantity -= decreaseQuantity;
+                    }
+
+                }
+                else
+                {
+                    var UpdateProduct = await _context.Product.FindAsync(sales.ProductId);
+                    UpdateProduct.CurrentQuantity += sales.Quantity;
+
+                    var NewUpdateProduct = await _context.Product.FindAsync(ProductId);
+                    NewUpdateProduct.CurrentQuantity -= Quantity;
+
+
+                }
+                sales.BranchId = BranchId;
+                sales.CustomerId = CustomerId;
+                sales.ProductId = ProductId;
+                sales.Quantity = Quantity;
+                sales.Price = Price;
+                sales.Amount = Amount;
+                sales.OrderDate = OrderDate;
+                sales.DeliveryDate = DeliveryDate;
+                sales.Remarks = Remarks;
+                sales.InvoiceId = InvoiceId;
+                sales.AdminId = AdminId;
                 try
                 {
-                    _context.Update(salesOrder);
+                    _context.Update(sales);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SalesOrderExists(salesOrder.SalesOrderId))
+                    if (!SalesOrderExists(sales.SalesOrderId))
                     {
                         return NotFound();
                     }
@@ -126,6 +223,20 @@ namespace IMS.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            SalesOrder salesOrder = new SalesOrder();
+            salesOrder.SalesOrderId = SalesOrderId;
+            salesOrder.BranchId = BranchId;
+            salesOrder.CustomerId = CustomerId;
+            salesOrder.ProductId = ProductId;
+            salesOrder.Quantity = Quantity;
+            salesOrder.Price = Price;
+            salesOrder.Amount = Amount;
+            salesOrder.OrderDate = OrderDate;
+            salesOrder.DeliveryDate = DeliveryDate;
+            salesOrder.Remarks = Remarks;
+            salesOrder.InvoiceId = InvoiceId;
+            salesOrder.AdminId = AdminId;
             ViewData["BranchId"] = new SelectList(_context.Branch, "BranchId", "BranchName", salesOrder.BranchId);
             ViewData["CustomerId"] = new SelectList(_context.Customer, "CustomerId", "CustomerName", salesOrder.CustomerId);
             ViewData["ProductId"] = new SelectList(_context.Product, "ProductId", "ProductName", salesOrder.ProductId);
@@ -165,6 +276,12 @@ namespace IMS.Controllers
             var salesOrder = await _context.SalesOrder.FindAsync(id);
             if (salesOrder != null)
             {
+                var UpdateProduct = await _context.Product.FindAsync(salesOrder.ProductId);
+                if (UpdateProduct == null)
+                    return NotFound();
+                {
+                    UpdateProduct.CurrentQuantity += salesOrder.Quantity;
+                }
                 _context.SalesOrder.Remove(salesOrder);
             }
             

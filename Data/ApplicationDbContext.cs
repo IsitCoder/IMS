@@ -39,6 +39,11 @@ namespace IMS.Data
 
             base.OnModelCreating(modelBuilder);
         }
+
+
+
+
+        public DbSet<IMS.Models.Bill>? Bill { get; set; }
     }
 
 

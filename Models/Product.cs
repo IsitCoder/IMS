@@ -29,6 +29,8 @@ namespace IMS.Models
 
         public ICollection<SalesOrder> SalesOrder { get; set; }
 
+  
+
 
 
     }
